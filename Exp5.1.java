@@ -15,6 +15,45 @@ Java Program:
 parseStringToInteger(): This method parses a string into an Integer. It catches any NumberFormatException if the string is not a valid number.
 calculateSum(): This method calculates the sum of a list of integers. Java automatically performs unboxing when adding Integer values to sum (an int).
 
+SOLUTION:
+  import java.util.*;
+
+public class Main {
+    
+    public static Integer parseStringToInteger(String str) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + str);
+            return null;
+        }
+    }
+
+    public static int calculateSum(List<Integer> numbers) {
+        int sum = 0;
+        for (Integer num : numbers) {
+            if (num != null) {
+                sum += num;
+            }
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        List<String> inputs = Arrays.asList("10", "20", "30", "40", "50");
+
+        List<Integer> numbers = new ArrayList<>();
+        for (String str : inputs) {
+            Integer num = parseStringToInteger(str);
+            if (num != null) {
+                numbers.add(num);
+            }
+        }
+
+        System.out.println("The sum of the list is: " + calculateSum(numbers));
+    }
+}
+
 
 
 
