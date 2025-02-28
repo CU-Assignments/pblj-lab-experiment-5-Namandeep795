@@ -26,14 +26,14 @@ class Employee implements Serializable {
     }
 }
 
-class EmployeeManagement {  // Removed 'public' from the class name
+class EmployeeManagement {
     private static final String FILE_NAME = "employees.ser";
 
     public static void addEmployee() {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter Employee ID: ");
         int id = sc.nextInt();
-        sc.nextLine();
+        sc.nextLine();  // Consume the leftover newline
         System.out.print("Enter Employee Name: ");
         String name = sc.nextLine();
         System.out.print("Enter Designation: ");
@@ -42,13 +42,14 @@ class EmployeeManagement {  // Removed 'public' from the class name
         double salary = sc.nextDouble();
 
         Employee employee = new Employee(id, name, designation, salary);
-        saveEmployeeToFile(employee);
-        System.out.println("Employee added successfully!");
-    }
-
-    private static void saveEmployeeToFile(Employee employee) {
         List<Employee> employees = readEmployeesFromFile();
         employees.add(employee);
+        saveEmployeesToFile(employees);
+
+        System.out.println("Employee added successfully.");
+    }
+
+    private static void saveEmployeesToFile(List<Employee> employees) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
             oos.writeObject(employees);
         } catch (IOException e) {
@@ -59,7 +60,7 @@ class EmployeeManagement {  // Removed 'public' from the class name
     public static void displayAllEmployees() {
         List<Employee> employees = readEmployeesFromFile();
         if (employees.isEmpty()) {
-            System.out.println("No employees found.");
+            System.out.println("No employees found. Start adding employees.");
         } else {
             for (Employee emp : employees) {
                 emp.display();
@@ -68,21 +69,26 @@ class EmployeeManagement {  // Removed 'public' from the class name
     }
 
     private static List<Employee> readEmployeesFromFile() {
-        List<Employee> employees = new ArrayList<>();
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
-            employees = (List<Employee>) ois.readObject();
-        } catch (FileNotFoundException e) {
-            System.out.println("No employees found. Start adding employees.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error: " + e.getMessage());
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            return new ArrayList<>();
         }
-        return employees;
-    }
 
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+            return (List<Employee>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error reading employees: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+}
+
+// Main Class - Entry Point
+public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.println("\nMenu:");
+            System.out.println("\nEmployee Management System");
             System.out.println("1. Add Employee");
             System.out.println("2. Display All Employees");
             System.out.println("3. Exit");
@@ -91,10 +97,10 @@ class EmployeeManagement {  // Removed 'public' from the class name
 
             switch (choice) {
                 case 1:
-                    addEmployee();
+                    EmployeeManagement.addEmployee();
                     break;
                 case 2:
-                    displayAllEmployees();
+                    EmployeeManagement.displayAllEmployees();
                     break;
                 case 3:
                     System.out.println("Exiting...");
@@ -105,6 +111,7 @@ class EmployeeManagement {  // Removed 'public' from the class name
         }
     }
 }
+
 
 
 Steps:
